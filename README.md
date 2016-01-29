@@ -213,6 +213,8 @@ These are the same as [net.Server](http://nodejs.org/docs/latest/api/net.html#ne
 
 * **connection**(< _object_ >connInfo, < _function_ >accept, < _function_ >deny) - Emitted for each new (authenticated, if applicable) connection request. `connInfo` has the properties:
 
+    * **cmd** - _string_ - The type of operation requested (`connect` or `bind`).
+
     * **srcAddr** - _string_ - The remote IP address of the client that sent the request.
 
     * **srcPort** - _integer_ - The remote port of the client that sent the request.
@@ -239,7 +241,9 @@ These are the same as [net.Server](http://nodejs.org/docs/latest/api/net.html#ne
 Client events
 -------------
 
-* **connect**(< _Socket_ >connection) - Emitted when handshaking/negotiation is complete and you are free to read from/write to the connected socket.
+* **connect**(< _Socket_ >connection, < _string_ >address, < _integer_ >port) - Emitted when handshaking/negotiation is complete and you are free to read from/write to the connected socket. In a bind request also present are address and port of the remote connection
+
+* **bind**(< _Socket_ >connection, < _string_ >address, < _integer_ >port) - Emitted when the bind is complete. Also present host and port of the bind.
 
 * **error**(< _Error_ >err) - Emitted when a parser, socket (during handshaking/negotiation), or DNS (if `localDNS` and `strictLocalDNS` are `true`) error occurs.
 

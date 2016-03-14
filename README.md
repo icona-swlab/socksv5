@@ -179,11 +179,11 @@ Exports
 
 * **Server** - A class representing a SOCKS server.
 
-* **createServer**([< _function_ >connectionListener]) - _Server_ - Similar to `net.createServer()`.
+* **createServer**([< _object_ >options], [< _function_ >connectionListener]) - _Server_ - Similar to `net.createServer()`. If passed an `options` with `tls` as a field a tls.Server is created instead.
 
 * **Client** - A class representing a SOCKS client.
 
-* **connect**(< _object_ >options[, < _function_ >connectListener]) - _Client_ - `options` must contain `port`, `proxyHost`, and `proxyPort`. If `host` is not provided, it defaults to 'localhost'.
+* **connect**(< _object_ >options[, < _function_ >connectListener]) - _Client_ - `options` must contain `port`, `proxyHost`, and `proxyPort`. If `host` is not provided, it defaults to 'localhost'. if `tls` is present a tls.Socket is created.
 
 * **createConnection**(< _object_ >options[, < _function_ >connectListener]) - _Client_ - Aliased to `connect()`.
 

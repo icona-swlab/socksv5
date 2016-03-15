@@ -223,6 +223,8 @@ These are the same as [net.Server](http://nodejs.org/docs/latest/api/net.html#ne
 
     * **dstPort** - _integer_ - The destination port that the client has requested.
 
+    * **user** - _string_ - The user used to authenticate (maybe be undefined for auth none).
+
     `accept` has a boolean parameter which if set to `true`, will return the underlying `net.Socket` for you to read from/write to, allowing you to intercept the request instead of proxying the connection to its intended destination.
 
 

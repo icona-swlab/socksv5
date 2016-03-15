@@ -53,10 +53,12 @@ var tests = [
           debug('received :' + data);
           socket.end(PROXY_RESPONSE, 'ascii');
         })
-      }).on('error', function(err) {
+      }).useAuth(auth.UserPassword('nodejsb', 'rules')
+      ).on('error', function(err) {
         assert(false, makeMsg(what, 'Unexpected error: ' + err));
       }).on('close', function() {
-      }).on('bind', function(socket, bserver, bport) {
+      }
+      ).on('bind', function(socket, bserver, bport) {
         debug('bind on:'+bserver + ':' + bport);
 
         connect({
@@ -88,9 +90,14 @@ var tests = [
                 makeMsg(what, 'Wrong number of connections'));
             next();
           });
-        }).useAuth(auth.None());
-
-      }).useAuth(auth.None());
+        }).useAuth(auth.UserPassword('nodejsc', 'rules'));
+      });
+    }).useAuth(auth.UserPassword(function(user, pass, cb) {
+      debug('Auth:'+user+' '+pass);
+      cb(user.startsWith('nodejs') && pass.startsWith('rules'));
+    })).on('connection', function(connInfo, accept, deny) {
+      debug('Connection for:'+JSON.stringify(connInfo));
+      accept();
     });
   },
     what: 'bind send/receive'

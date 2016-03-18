@@ -102,6 +102,53 @@ var tests = [
       var what = this.what,
           conns = [],
           server;
+      server = createServer(function(info, accept) {
+         assert(info.cmd === 'connect',
+                makeMsg(what, 'Unexpected command: ' + info.cmd));
+         assert(typeof info.srcAddr === 'string' && info.srcAddr.length,
+               makeMsg(what, 'Bad srcAddr'));
+         assert(typeof info.srcPort === 'number' && info.srcPort > 0,
+                makeMsg(what, 'Bad srcPort'));
+         assert(typeof info.dstAddr === 'string' && info.dstAddr.length,
+                makeMsg(what, 'Bad dstAddr'));
+         assert(typeof info.dstPort === 'number' && info.dstPort > 0,
+                makeMsg(what, 'Bad dstPort'));
+         assert(typeof info.authObj === 'object' ,
+                makeMsg(what, 'Bad authObj object'));
+         assert(typeof info.authObj.user === 'string' && info.authObj.user.length,
+                makeMsg(what, 'Bad authObj.user'));
+         conns.push(info);
+         accept();
+        });
+
+        server.useAuth(auth.UserPassword(function(user, pass, cb) {
+          cb(user === 'nodejs' && pass === 'rules', {user: user});
+        }));
+
+      server.listen(0, 'localhost', function() {
+        var args = ['--socks5',
+                    this.address().address + ':' + this.address().port,
+                    '-U',
+                    'nodejs:rules',
+                    'http://' + httpAddr + ':' + httpPort];
+          cpexec('curl', args, function(err, stdout, stderr) {
+                server.close();
+                assert(!err, makeMsg(what, 'Unexpected client error: '
+                    + extractCurlError(stderr)));
+                assert(stdout === HTTP_RESPONSE,
+                    makeMsg(what, 'Response mismatch'));
+                assert(conns.length === 1,
+                    makeMsg(what, 'Wrong number of connections'));
+                next();
+            });
+        });
+    },
+        what: 'User/Password authentication (valid credentials), passing auth objects'
+    },
+  { run: function() {
+      var what = this.what,
+          conns = [],
+          server;
       server = createServer(function() {
         assert(false, makeMsg(what, 'Unexpected connection'));
       });

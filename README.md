@@ -193,7 +193,7 @@ Exports
 
         * **None**() - Returns an authentication handler that permits no authentication.
 
-        * **UserPassword**(< _function_ >validateUser) - Returns an authentication handler that permits username/password authentication. `validateUser` is passed the username, password, and a callback that you call with a boolean indicating whether the username/password is valid.
+        * **UserPassword**(< _function_ >validateUser) - Returns an authentication handler that permits username/password authentication. `validateUser` is passed the username, password, and a callback that you call with a boolean indicating whether the username/password is valid and optionally an object that will be passed back on the connection call back.
 
     * **(Client usage)**
 
@@ -223,7 +223,7 @@ These are the same as [net.Server](http://nodejs.org/docs/latest/api/net.html#ne
 
     * **dstPort** - _integer_ - The destination port that the client has requested.
 
-    * **user** - _string_ - The user used to authenticate (maybe be undefined for auth none).
+    * **authObj** - _object_ - The object passed in the auth accept funcion (maybe be undefined for auth none).
 
     `accept` has a boolean parameter which if set to `true`, will return the underlying `net.Socket` for you to read from/write to, allowing you to intercept the request instead of proxying the connection to its intended destination.
 

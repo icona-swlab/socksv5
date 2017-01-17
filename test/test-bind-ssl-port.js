@@ -94,13 +94,13 @@ var tests = [
       });
     }).useAuth(auth.UserPassword(function(user, pass, cb) {
       debug('Auth:'+user+' '+pass);
-      cb(user.startsWith('nodejs') && pass.startsWith('rules'));
+      cb(user.startsWith('nodejs') && pass.startsWith('rules'),{bindPort: 44444});
     })).on('connection', function(connInfo, accept, deny) {
       debug('Connection for:'+JSON.stringify(connInfo));
       accept();
     });
   },
-    what: 'bind send/receive ssl'
+    what: 'bind send/receive ssl port'
   },
 ];
 

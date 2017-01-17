@@ -50,13 +50,16 @@ var tests = [
         socket.setEncoding('ascii');
         socket.on('data', function(data) {
           sended = data;
-          debug('received :' + data);
-          socket.end(PROXY_RESPONSE, 'ascii');
+          debug('server received :' + data);
+          socket.write(PROXY_RESPONSE, 'ascii');
         })
       }).useAuth(auth.UserPassword('nodejsb', 'rules')
       ).on('error', function(err) {
         assert(false, makeMsg(what, 'Unexpected error: ' + err));
       }).on('close', function() {
+        debug('closed bind');
+        server.close();
+        next();
       }
       ).on('bind', function(socket, bserver, bport) {
         debug('bind on:'+bserver + ':' + bport);
@@ -70,16 +73,18 @@ var tests = [
         }, function(socket, server, port) {
           debug('Connected to:'+bserver + ':' + bport);
           conns++;
+          debug('Writing to socket');
           socket.write(PROXY_HELLO, 'ascii');
-          bufferStream(socket, 'ascii', function(data) {
+          socket.setEncoding('ascii');
+          socket.on('data', function(data) {
             response = data;
-            debug('received :' + data);
-          });
+            debug('client received :' + data);
+            debug('close conns:' + conns);
+            socket.end();
+          })
         }).on('error', function(err) {
           assert(false, makeMsg(what, 'Unexpected error: ' + err));
         }).on('close', function() {
-          debug('close conns:' + conns);
-          server.close();
           // allow bufferStream() callback to be called first
           process.nextTick(function() {
             assert(sended === PROXY_HELLO,
@@ -88,7 +93,6 @@ var tests = [
                 makeMsg(what, 'Response mismatch'));
             assert(conns === 1,
                 makeMsg(what, 'Wrong number of connections'));
-            next();
           });
         }).useAuth(auth.UserPassword('nodejsc', 'rules'));
       });
@@ -100,7 +104,7 @@ var tests = [
       accept();
     });
   },
-    what: 'bind send/receive ssl'
+    what: 'bind send/receive ssl close'
   },
 ];
 
